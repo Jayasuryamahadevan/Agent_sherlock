@@ -27,3 +27,7 @@ The browser UI accepts a complaint and optional DNS hostname, shows the current 
 Screenshot analysis is optional and requires a separate Gemini API key because the signed-in `agy --print` interface has no documented file attachment mechanism. Install the extra with `python -m pip install "fieldnote-diagnostics[images]"`, set `GEMINI_API_KEY`, and upload a PNG or JPEG under 6 MB. The image is held in memory for the model request, not saved in the app's audit log. Without the key, text diagnosis through your Antigravity login still works; the UI explains why a screenshot cannot be submitted.
 
 The app supports Linux and Windows host inspection paths, but only the Linux path has been run here. Windows PowerShell collection and the optional terminal DNS cache action still require verification on a Windows machine. The AI may be wrong, and Wi-Fi or Ethernet problems are analyzed rather than automatically repaired.
+
+### Signed-in Antigravity screenshots
+
+The interactive `agy` prompt accepts pasted images. The app's browser upload is different: the installed `agy --print` interface does not document image attachments. A live test with `@/path/to/image.png` produced a denied command action and no image analysis, and the installed Python SDK required a Gemini API key. Therefore browser screenshot analysis needs the optional `images` extra and `GEMINI_API_KEY`. To use only Google login for an image, open interactive `agy` and paste the screenshot there; that result is not imported into the browser app.
