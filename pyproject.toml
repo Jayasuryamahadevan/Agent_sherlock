@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fieldnote-diagnostics"
-version = "0.4.0"
+version = "0.4.1"
 description = "Windows diagnostic agent with evidence planning, policy pipelines and local UI"
 readme = "README.md"
 requires-python = ">=3.11"
