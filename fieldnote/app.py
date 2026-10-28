@@ -13,8 +13,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from .antigravity_diagnose import ANALYSER, ask, collect_system, dns_check
+from diagnostic_intelligence.api import create_app as create_engine_app
 
 app = FastAPI(title='Fieldnote Diagnostics', docs_url=None, redoc_url=None)
+app.mount('/engine', create_engine_app())
 PAGE = Path(__file__).with_name('index.html')
 SESSIONS = {}
 LIMIT = asyncio.Semaphore(1)

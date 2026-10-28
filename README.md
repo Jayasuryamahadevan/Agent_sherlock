@@ -1,33 +1,39 @@
-# Agent Sherlock / Fieldnote Diagnostics
+# Agent Sherlock
 
-A lightweight diagnostic app for the computer on which it runs. It collects bounded system and network evidence and uses your signed-in Antigravity CLI (`agy`) to explain likely causes. The browser interface never runs repairs. The terminal has one separately approved Windows DNS cache action.
+A local Windows diagnostic agent with a browser UI. The installed package includes the original evidence-driven engine: AI triage, selective Windows evidence collection, grounded hypotheses, a controlled action catalog, three policy pipelines, approval decisions, verification, simulation, and an audit trail. It also includes a simpler read-only host snapshot in the UI. The AI text path uses the signed-in Antigravity CLI (`agy`).
 
-## Install
+## Install on the computer to diagnose
 
-Install Python 3.11 or later and [Antigravity CLI](https://antigravity.google/docs/getting-started/). Run `agy` once to sign in with Google. Then install from this repository:
+Install Python 3.11+ and [Antigravity CLI](https://antigravity.google/docs/getting-started/). Launch `agy` once and sign in with Google. Then:
 
 ```bash
-python -m pip install "git+https://github.com/Jayasuryamahadevan/Agent_sherlock.git"
+python -m pip install --upgrade "git+https://github.com/Jayasuryamahadevan/Agent_sherlock.git"
 fieldnote inspect
 fieldnote serve
 ```
 
-Open `http://127.0.0.1:8000`. On Windows, use `py -m pip install ...` if `python` is unavailable. The `fieldnote` command may require opening a new terminal after installation. No Docker setup is needed for native host inspection.
+On Windows, `py -m pip install ...` may be needed. Open `http://127.0.0.1:8000`. The server binds to loopback. Install it on each computer rather than exposing it over a network.
 
-You can also run `fieldnote analyze "Wi-Fi connects but websites do not load" --dns-host example.com` in a terminal. That command may propose clearing the Windows DNS cache if the named host does not resolve; it requires typing `YES` before any change. Other issues are analysis only.
+## Two investigation paths in the UI
 
-The app sends your complaint and collected metrics to the model tied to your Antigravity account. It shows uncertainty and should not be treated as proof of a root cause. Antigravity access and usage depend on your Google account. The app binds the web server to `127.0.0.1` and does not provide remote-user authentication. Install it on each friend's own device.
+**Quick investigation** collects a bounded host snapshot and returns an AI explanation. It runs no repairs. The UI shows stages, read-only collector commands, evidence and a metadata-only audit log at `~/.fieldnote/audit.jsonl`.
 
-For a clean uninstall: `python -m pip uninstall fieldnote-diagnostics`.
+**Advanced Windows agent** uses selective collectors and the original policy engine. Choose one of three pipelines:
 
-## Activity, screenshots, and logs
+- Diagnosis only (`automatic_execution`): collects and remeasures evidence; recommends actions without changing the system.
+- Ask before eligible changes (`whitelist_approval`): requires a catalogued action, matching parameters, and explicit approval.
+- Automatic eligible fixes (`auto_resolution`): can execute allowed low/medium-risk actions, then collects fresh evidence to verify the outcome. Real changes require `DIAG_ALLOW_SYSTEM_CHANGES=1`; some also require an administrator terminal.
 
-The browser UI accepts a complaint and optional DNS hostname, shows the current investigation stages, collected evidence, and the read-only collector commands. It does not execute repair commands. Session event metadata is appended to `~/.fieldnote/audit.jsonl` on the host. The audit log excludes complaint text, screenshots, and raw evidence; the current session's full evidence is kept in memory until the app restarts. The UI is local-only and should not be exposed publicly.
+On Linux, the advanced engine runs a simulated Windows PC. The quick path inspects the Linux host. The advanced engine's collector and real action commands have unit tests with mocked Windows calls but have **not been run on a real Windows machine**. See [pipeline details](docs/PIPELINES.md).
 
-Screenshot analysis is optional and requires a separate Gemini API key because the signed-in `agy --print` interface has no documented file attachment mechanism. Install the extra with `python -m pip install "fieldnote-diagnostics[images]"`, set `GEMINI_API_KEY`, and upload a PNG or JPEG under 6 MB. The image is held in memory for the model request, not saved in the app's audit log. Without the key, text diagnosis through your Antigravity login still works; the UI explains why a screenshot cannot be submitted.
+The original engine has 156 passing automated tests in this repository; they cover simulation, policy, grounding, API, and collectors. A live simulated diagnosis with `gemini-3.8-flash-low` completed and returned a grounded DNS finding. Model accuracy across scenarios and real Windows problems has not been measured.
 
-The app supports Linux and Windows host inspection paths, but only the Linux path has been run here. Windows PowerShell collection and the optional terminal DNS cache action still require verification on a Windows machine. The AI may be wrong, and Wi-Fi or Ethernet problems are analyzed rather than automatically repaired.
+## Screenshots
 
-### Signed-in Antigravity screenshots
+Interactive `agy` accepts pasted screenshots. The app's browser upload uses the optional Gemini API route because the signed-in `agy --print` path has no verified image attachment interface. To enable browser screenshots, install `python -m pip install "fieldnote-diagnostics[images]"` and set `GEMINI_API_KEY`; images are held in memory during the request and are not written to the app audit log. This image route has not had a live model test here. Text diagnosis works with Google login alone.
 
-The interactive `agy` prompt accepts pasted images. The app's browser upload is different: the installed `agy --print` interface does not document image attachments. A live test with `@/path/to/image.png` produced a denied command action and no image analysis, and the installed Python SDK required a Gemini API key. Therefore browser screenshot analysis needs the optional `images` extra and `GEMINI_API_KEY`. To use only Google login for an image, open interactive `agy` and paste the screenshot there; that result is not imported into the browser app.
+## Limits
+
+The quick app's sessions live in memory. Its audit log records stage metadata and avoids storing complaint text, screenshots and raw evidence. The advanced engine stores an on-disk audit log and keeps API sessions in memory. This local server has no multi-user authentication. Keep it on loopback. Driver, application and update-history evidence coverage remains incomplete. No rollback framework is implemented. An action's successful exit is not treated as proof that the problem was fixed.
+
+To uninstall: `python -m pip uninstall fieldnote-diagnostics`.
