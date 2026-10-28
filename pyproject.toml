@@ -4,14 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fieldnote-diagnostics"
-version = "0.3.0"
+version = "0.4.0"
 description = "Windows diagnostic agent with evidence planning, policy pipelines and local UI"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic>=2.7,<3", "psutil>=5.9,<8"]
-
-[project.optional-dependencies]
-images = ["google-genai>=1.0,<3"]
 
 [project.scripts]
 fieldnote = "fieldnote.cli:main"

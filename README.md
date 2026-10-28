@@ -28,10 +28,6 @@ On Linux, the advanced engine runs a simulated Windows PC. The quick path inspec
 
 The original engine has 156 passing automated tests in this repository; they cover simulation, policy, grounding, API, and collectors. A live simulated diagnosis with `gemini-3.8-flash-low` completed and returned a grounded DNS finding. Model accuracy across scenarios and real Windows problems has not been measured.
 
-## Screenshots
-
-Interactive `agy` accepts pasted screenshots. The app's browser upload uses the optional Gemini API route because the signed-in `agy --print` path has no verified image attachment interface. To enable browser screenshots, install `python -m pip install "fieldnote-diagnostics[images]"` and set `GEMINI_API_KEY`; images are held in memory during the request and are not written to the app audit log. This image route has not had a live model test here. Text diagnosis works with Google login alone.
-
 ## Limits
 
 The quick app's sessions live in memory. Its audit log records stage metadata and avoids storing complaint text, screenshots and raw evidence. The advanced engine stores an on-disk audit log and keeps API sessions in memory. This local server has no multi-user authentication. Keep it on loopback. Driver, application and update-history evidence coverage remains incomplete. No rollback framework is implemented. An action's successful exit is not treated as proof that the problem was fixed.
